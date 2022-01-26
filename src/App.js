@@ -1,13 +1,12 @@
-import React from "react";
+import React, {useContext, useEffect} from "react";
 import {GlobalStyle} from "./globalStyles";
 import Task from "./components/Task";
 import styled from "styled-components";
 import AddTask from "./components/AddTask";
 import {getCurrentDate} from "./helpers/getCurrentDate";
 import 'react-toastify/dist/ReactToastify.min.css';
-import { ToastContainer} from "react-toastify";
-import {successMessage} from "./helpers/toastActions";
-import ErrorBoundary from "./components/ErrorBoundary";
+import {ToastContainer} from "react-toastify";
+import { setTask, TaskContext} from "./contexts/taskContext";
 
 const MainPage = styled.div`
   position: relative;
@@ -45,67 +44,36 @@ const TaskContainer = styled.div`
   }
 `
 
-class App extends React.Component {
-    state = {
-        tasks: [],
-    }
+const App = () => {
+    const { state, dispatch } = useContext(TaskContext);
 
-    componentDidMount() {
+    useEffect(() => {
         const tasks = JSON.parse(localStorage.getItem("tasks"))
-        tasks ? this.setState({tasks: tasks}) : this.setState({tasks: []})
-    }
+        tasks && dispatch(setTask(tasks))
+    }, [])
 
-    componentDidUpdate(prevProps, prevState) {
-            if(prevState.tasks !== this.state.tasks) {
-                localStorage.setItem("tasks", JSON.stringify(this.state.tasks))
-            }
-    }
+    useEffect(() => {
+        localStorage.setItem("tasks", JSON.stringify(state.tasks))
+    }, [state.tasks])
 
-    addTask = (newTask) => {
-        this.setState({
-            tasks: [...this.state.tasks, newTask]
-        }, () => successMessage("Завдання додано !"))
-    }
-
-    deleteTask = (taskId) => {
-        this.setState({
-            tasks: this.state.tasks.filter(task => task.id !== taskId)
-        }, () => successMessage("Завдання видалено !"))
-    }
-
-    setTaskStatus = (status, taskId) => {
-        this.setState({
-            tasks: this.state.tasks.map(task => task.id === taskId
-                ? {...task, status: status}
-                : task
-            )
-        })
-    }
-
-    render() {
-        return <>
+    return (
+        <>
             <MainPage>
                 <GlobalStyle/>
                 <TaskContainer>
                     <h4>{getCurrentDate()}</h4>
                     <div className="taskBlock">
                         {
-                            this.state.tasks.map(task =>
-                                <Task key={task.id}
-                                      task={task}
-                                      deleteTask={this.deleteTask}
-                                      setTaskStatus={this.setTaskStatus}
-                                />)
+                            state.tasks.map(task =>
+                                <Task key={task.id} task={task}/>)
                         }
                     </div>
                 </TaskContainer>
-                <ErrorBoundary>
-                    <AddTask addTask={this.addTask}/>
-                </ErrorBoundary>
+                <AddTask/>
             </MainPage>
             <ToastContainer limit={2}/>
         </>
-    }
+    )
 }
 
 export default App;
