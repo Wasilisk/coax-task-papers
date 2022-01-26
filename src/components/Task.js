@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import Delete from "../icons/Delete.svg"
-import Cancel from "../icons/Cancel.svg"
-import Complete from "../icons/Complete.svg"
+import CancelIcon from "../assets/icons/CancelIcon";
+import CompleteIcon from "../assets/icons/CompleteIcon";
+import DeleteIcon from "../assets/icons/DeleteIcon";
 
 const TaskContainer = styled.div`
   display: flex;
@@ -31,41 +31,35 @@ const TaskCheckbox = styled.div`
 
 
 class Task extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            status: ""
-        };
-    }
 
-    ClickHandler = () => {
-        if (this.state.status === "cancel") {
-            this.setState({status: ""});
-        } else if (this.state.status === "complete") {
-            this.setState({status: "cancel"});
+
+    ClickHandler = (status, id) => {
+        if (status === "cancel") {
+            this.props.setTaskStatus("", id);
+        } else if (status === "complete") {
+            this.props.setTaskStatus("cancel", id);
         } else {
-            this.setState({status: "complete"})
+            this.props.setTaskStatus("complete", id);
         }
     };
 
     textFormat = (text) => {
-       return text.length <= 20 ? text : `${text.slice(0,20)}...`;
+       return text.length < 20 ? text : `${text.slice(0,20)}...`;
     }
 
     render() {
         return <TaskContainer>
-            <TaskCheckbox onClick={this.ClickHandler}>
+            <TaskCheckbox onClick={() => this.ClickHandler(this.props.task.status, this.props.task.id)}>
                 {
                     {
-                        'cancel': <img src={Cancel} alt="Cancel icon"/>,
-                        'complete': <img src={Complete} alt="Complete icon"/>
-                    }[this.state.status]
+                        'cancel': <CancelIcon/>,
+                        'complete': <CompleteIcon/>
+                    }[this.props.task.status]
                 }
             </TaskCheckbox>
             <TaskText>{this.textFormat(this.props.task.text)}</TaskText>
-            <img style={{cursor: "pointer"}}
+            <DeleteIcon
                  onClick={() => this.props.deleteTask(this.props.task.id)}
-                 src={Delete} alt="Delete icon"
             />
         </TaskContainer>
     }

@@ -3,7 +3,8 @@ import { createGlobalStyle } from 'styled-components'
 export const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
-    height: 100vh;
+    min-height: 100vh;
+    height: auto;
     background: #000000;
     font-family: 'Inter', sans-serif, 'IBM Plex Mono', monospace;
     font-style: normal;
