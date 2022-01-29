@@ -6,7 +6,7 @@ export const successMessage = (message) => toast.success(message, {
     hideProgressBar: true,
     closeOnClick: true,
     pauseOnHover: true,
-    draggable: true,
+    draggable: false,
     progress: undefined,
     theme: "colored"
 });
@@ -17,7 +17,7 @@ export const errorMessage = (message) => toast.error(message, {
     hideProgressBar: true,
     closeOnClick: true,
     pauseOnHover: true,
-    draggable: true,
+    draggable: false,
     progress: undefined,
     theme: "colored"
 });

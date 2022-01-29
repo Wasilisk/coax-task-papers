@@ -1,17 +1,31 @@
+/* node modules */
 import React from "react";
 import styled from "styled-components";
+
+/* icons */
 import CancelIcon from "../assets/icons/CancelIcon";
 import CompleteIcon from "../assets/icons/CompleteIcon";
 import DeleteIcon from "../assets/icons/DeleteIcon";
 
+/* redux */
+import {connect} from "react-redux";
+import {deleteTaskAsync, updateStatus} from "../store/actions/taskActions";
+
+/* helpers */
+import SpinnerIcon from "../assets/icons/SpinnerIcon";
+
+
 const TaskContainer = styled.div`
+  min-width: 320px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 `
 
 const TaskText = styled.p`
+  width: 75%;
+  text-align: left;
   font-family: Inter, sans-serif;
   font-weight: 500;
   font-size: 18px;
@@ -30,39 +44,43 @@ const TaskCheckbox = styled.div`
 `
 
 
-class Task extends React.Component {
+const Task = (props) => {
+    const {id, text, status, inProgress} = props.task;
 
-
-    ClickHandler = (status, id) => {
+    const clickHandler = (status, id) => {
         if (status === "cancel") {
-            this.props.setTaskStatus("", id);
+            props.updateStatus("", id);
         } else if (status === "complete") {
-            this.props.setTaskStatus("cancel", id);
+            props.updateStatus("cancel", id);
         } else {
-            this.props.setTaskStatus("complete", id);
+            props.updateStatus("complete", id);
         }
     };
 
-    textFormat = (text) => {
-       return text.length < 20 ? text : `${text.slice(0,20)}...`;
+    const textFormat = (text) => {
+        return text.length < 20 ? text : `${text.slice(0, 20)}...`;
     }
 
-    render() {
-        return <TaskContainer>
-            <TaskCheckbox onClick={() => this.ClickHandler(this.props.task.status, this.props.task.id)}>
+    return (<TaskContainer>
+        <TaskCheckbox onClick={() => clickHandler(status, id)}>
+            {
                 {
-                    {
-                        'cancel': <CancelIcon/>,
-                        'complete': <CompleteIcon/>
-                    }[this.props.task.status]
-                }
-            </TaskCheckbox>
-            <TaskText>{this.textFormat(this.props.task.text)}</TaskText>
-            <DeleteIcon
-                 onClick={() => this.props.deleteTask(this.props.task.id)}
-            />
-        </TaskContainer>
-    }
+                    'cancel': <CancelIcon/>,
+                    'complete': <CompleteIcon/>
+                }[status]
+            }
+        </TaskCheckbox>
+        <TaskText>{textFormat(text)}</TaskText>
+        {
+            inProgress
+                ? <SpinnerIcon/>
+                : <DeleteIcon
+                    onClick={() => {
+                        props.deleteTaskAsync(id)
+                    }}
+                />
+        }
+    </TaskContainer>)
 }
 
-export default Task;
+export default connect(null, {updateStatus, deleteTaskAsync})(Task);

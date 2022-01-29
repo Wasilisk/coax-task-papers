@@ -1,8 +1,19 @@
-import React from "react";
+/* node modules */
+import React, {useState} from "react";
+import styled from "styled-components";
+
+/* elements */
 import {Input} from "../elements/Input";
 import {Button} from "../elements/Button";
-import styled from "styled-components";
-import { v4 as createId } from 'uuid';
+
+/* helpers */
+import {errorMessage, successMessage} from "../helpers/toastActions";
+
+/* redux */
+import {connect} from "react-redux";
+import {addTask} from "../store/actions/taskActions";
+
+
 
 const InputContainer = styled.div`
   display: flex;
@@ -11,51 +22,29 @@ const InputContainer = styled.div`
   bottom: 16px;
 `
 
-class AddTask extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            taskText: "",
-            isError: false
-        }
-        this.handleChange = this.handleChange.bind(this);
+const AddTask = (props) => {
+    const [inputText, setInputText]= useState("")
+
+    const handleChange = (event) => {
+        setInputText(event.target.value);
     }
 
-    handleChange(event) {
-        this.setState({taskText: event.target.value});
-    }
-
-    createNewTask = () => {
-        if(this.state.taskText) {
-            const newTask = {
-                id: createId(),
-                text: this.state.taskText,
-                status: ""
-            }
-            this.props.addTask(newTask)
-            this.setState({taskText: ""})
+    const createNewTask = () => {
+        if(inputText) {
+            props.addTask(inputText)
+            setInputText("")
+            successMessage("Завдання успішно додано !")
         } else {
-            this.setState({isError: true})
+            errorMessage("Завдання не можу бути пустим !")
         }
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if(prevState.isError) {
-            this.setState({isError: false})
-        }
-    }
-
-    render() {
-        if(this.state.isError) {
-            throw new Error("Завдання не можу бути пустим !")
-        }
         return(
             <InputContainer>
-                <Input placeholder="Write your task here" value={this.state.taskText} onChange={this.handleChange}/>
-                <Button onClick={this.createNewTask}>Add</Button>
+                <Input placeholder="Write your task here" value={inputText} onChange={handleChange}/>
+                <Button onClick={createNewTask}>Add</Button>
             </InputContainer>
         );
-    }
 }
 
-export default AddTask
+export default connect(null, {addTask})(AddTask);
