@@ -1,8 +1,18 @@
-import React from "react";
+/* node modules */
+import React, {useContext} from "react";
 import styled from "styled-components";
+
+/* icons */
 import CancelIcon from "../assets/icons/CancelIcon";
 import CompleteIcon from "../assets/icons/CompleteIcon";
 import DeleteIcon from "../assets/icons/DeleteIcon";
+
+/* context */
+import {deleteTask, updateStatus, TaskContext} from "../contexts/taskContext";
+
+/* helpers */
+import {successMessage} from "../helpers/toastActions";
+
 
 const TaskContainer = styled.div`
   display: flex;
@@ -30,39 +40,42 @@ const TaskCheckbox = styled.div`
 `
 
 
-class Task extends React.Component {
+const Task = (props) => {
+    const { state, dispatch } = useContext(TaskContext);
+    const {id, text, status} = props.task;
 
-
-    ClickHandler = (status, id) => {
+    const clickHandler = (status, id) => {
         if (status === "cancel") {
-            this.props.setTaskStatus("", id);
+            dispatch(updateStatus("", id));
         } else if (status === "complete") {
-            this.props.setTaskStatus("cancel", id);
+            dispatch(updateStatus("cancel", id));
         } else {
-            this.props.setTaskStatus("complete", id);
+            dispatch(updateStatus("complete", id));
         }
     };
 
-    textFormat = (text) => {
+    const textFormat = (text) => {
        return text.length < 20 ? text : `${text.slice(0,20)}...`;
     }
 
-    render() {
-        return <TaskContainer>
-            <TaskCheckbox onClick={() => this.ClickHandler(this.props.task.status, this.props.task.id)}>
+        return (<TaskContainer>
+            <TaskCheckbox onClick={() => clickHandler(status, id)}>
                 {
                     {
                         'cancel': <CancelIcon/>,
                         'complete': <CompleteIcon/>
-                    }[this.props.task.status]
+                    }[status]
                 }
             </TaskCheckbox>
-            <TaskText>{this.textFormat(this.props.task.text)}</TaskText>
+            <TaskText>{textFormat(text)}</TaskText>
             <DeleteIcon
-                 onClick={() => this.props.deleteTask(this.props.task.id)}
+                 onClick={() => {
+                     dispatch(deleteTask(id))
+                     localStorage.setItem("tasks", JSON.stringify(state.tasks))
+                     successMessage("Завдання успішно видалено !")
+                 }}
             />
-        </TaskContainer>
-    }
+        </TaskContainer>)
 }
 
 export default Task;
