@@ -15,15 +15,21 @@ export default function taskReducer(state = initialState, action) {
             const newTask = {
                 id: createId(),
                 text: action.text,
-                status: ""
+                status: "",
+                inProgress: false
             }
             return {
-                ...state,
                 tasks: [...state.tasks, newTask]
             };
+        case ACTIONS.DELETE_TASK_IN_PROGRESS:
+            return {
+                tasks: state.tasks.map(task => task.id === action.taskId
+                    ? {...task, inProgress: true}
+                    : task
+                )
+            }
         case ACTIONS.DELETE_TASK:
             return {
-                ...state,
                 tasks: state.tasks.filter(task => task.id !== action.taskId)
             };
         case ACTIONS.UPDATE_STATUS:

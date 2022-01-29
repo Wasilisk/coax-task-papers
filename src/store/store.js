@@ -6,6 +6,8 @@ import storage from 'redux-persist/lib/storage'
 
 import taskReducer from './reducers/taskReducer.js';
 
+import {watchIncrementAsync} from "./sagas/taskSaga";
+
 const persistConfig = {
     key: 'tasks',
     storage,
@@ -18,5 +20,8 @@ const sagaMiddleware = createSagaMiddleware()
 export const store = createStore(persistedReducer,
     composeWithDevTools(applyMiddleware(sagaMiddleware))
 );
+
 export const persistor = persistStore(store)
+
+sagaMiddleware.run(watchIncrementAsync)
 

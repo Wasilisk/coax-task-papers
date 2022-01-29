@@ -9,20 +9,23 @@ import DeleteIcon from "../assets/icons/DeleteIcon";
 
 /* redux */
 import {connect} from "react-redux";
-import {deleteTask, updateStatus} from "../store/actions/taskActions";
+import {deleteTaskAsync, updateStatus} from "../store/actions/taskActions";
 
 /* helpers */
-import {successMessage} from "../helpers/toastActions";
+import SpinnerIcon from "../assets/icons/SpinnerIcon";
 
 
 const TaskContainer = styled.div`
+  min-width: 320px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 `
 
 const TaskText = styled.p`
+  width: 75%;
+  text-align: left;
   font-family: Inter, sans-serif;
   font-weight: 500;
   font-size: 18px;
@@ -42,7 +45,7 @@ const TaskCheckbox = styled.div`
 
 
 const Task = (props) => {
-    const {id, text, status} = props.task;
+    const {id, text, status, inProgress} = props.task;
 
     const clickHandler = (status, id) => {
         if (status === "cancel") {
@@ -68,13 +71,16 @@ const Task = (props) => {
             }
         </TaskCheckbox>
         <TaskText>{textFormat(text)}</TaskText>
-        <DeleteIcon
-            onClick={() => {
-                props.deleteTask(id)
-                successMessage("Завдання успішно видалено !")
-            }}
-        />
+        {
+            inProgress
+                ? <SpinnerIcon/>
+                : <DeleteIcon
+                    onClick={() => {
+                        props.deleteTaskAsync(id)
+                    }}
+                />
+        }
     </TaskContainer>)
 }
 
-export default connect(null, {updateStatus, deleteTask})(Task);
+export default connect(null, {updateStatus, deleteTaskAsync})(Task);
