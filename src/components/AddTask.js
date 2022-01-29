@@ -1,5 +1,5 @@
 /* node modules */
-import React, {useContext, useState} from "react";
+import React, {useState} from "react";
 import styled from "styled-components";
 
 /* elements */
@@ -9,8 +9,10 @@ import {Button} from "../elements/Button";
 /* helpers */
 import {errorMessage, successMessage} from "../helpers/toastActions";
 
-/* context */
-import {addTask, TaskContext} from "../contexts/taskContext";
+/* redux */
+import {connect} from "react-redux";
+import {addTask} from "../store/actions/taskActions";
+
 
 
 const InputContainer = styled.div`
@@ -20,9 +22,8 @@ const InputContainer = styled.div`
   bottom: 16px;
 `
 
-const AddTask = () => {
+const AddTask = (props) => {
     const [inputText, setInputText]= useState("")
-    const { state, dispatch } = useContext(TaskContext);
 
     const handleChange = (event) => {
         setInputText(event.target.value);
@@ -30,9 +31,8 @@ const AddTask = () => {
 
     const createNewTask = () => {
         if(inputText) {
-            dispatch(addTask(inputText))
+            props.addTask(inputText)
             setInputText("")
-            localStorage.setItem("tasks", JSON.stringify(state.tasks))
             successMessage("Завдання успішно додано !")
         } else {
             errorMessage("Завдання не можу бути пустим !")
@@ -47,4 +47,4 @@ const AddTask = () => {
         );
 }
 
-export default AddTask
+export default connect(null, {addTask})(AddTask);

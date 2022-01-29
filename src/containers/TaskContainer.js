@@ -1,13 +1,13 @@
 /* components */
 import Task from "../components/Task";
-import {useContext} from "react";
 import styled from "styled-components";
 
 /* helpers */
 import {getCurrentDate} from "../helpers/getCurrentDate";
 
-/* context */
-import {TaskContext} from "../contexts/taskContext";
+/* redux */
+import {connect} from "react-redux";
+
 
 const TaskGroup = styled.div`
   height: 100%;
@@ -34,15 +34,14 @@ const TaskGroup = styled.div`
   }
 `
 
-const TaskContainer = () => {
-    const {state} = useContext(TaskContext);
+const TaskContainer = (props) => {
 
     return (
         <TaskGroup>
             <h4>{getCurrentDate()}</h4>
             <div className="taskBlock">
                 {
-                    state.tasks.map(task =>
+                    props.tasks.map(task =>
                         <Task key={task.id} task={task}/>)
                 }
             </div>
@@ -50,4 +49,10 @@ const TaskContainer = () => {
     );
 };
 
-export default TaskContainer;
+const mapStateToProps = (state) => {
+    return {
+        tasks: state.tasks
+    }
+}
+
+export default connect(mapStateToProps)(TaskContainer);

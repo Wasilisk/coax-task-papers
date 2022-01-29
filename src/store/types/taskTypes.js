@@ -1,0 +1,6 @@
+export const TASK_ACTIONS = {
+    SET_TASK: "SET-TASK",
+    ADD_TASK: "ADD-TASK",
+    DELETE_TASK: "DELETE-TASK",
+    UPDATE_STATUS: "UPDATE-STATUS"
+};
