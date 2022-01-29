@@ -1,4 +1,5 @@
-import React, { useReducer, createContext, useMemo } from "react";
+/* node modules */
+import React, {useReducer, createContext, useEffect} from "react";
 import {v4 as createId} from "uuid";
 
 export const TaskContext = createContext();
@@ -9,9 +10,11 @@ export const ACTIONS = {
     DELETE_TASK: "DELETE-TASK",
     UPDATE_STATUS: "UPDATE-STATUS"
 };
+
 const initialState = {
     tasks: [],
 };
+
 const reducer = (state, action) => {
     switch (action.type) {
         case ACTIONS.SET_TASK:
@@ -53,11 +56,13 @@ export const updateStatus = (status, taskId) => ({type: ACTIONS.UPDATE_STATUS, s
 export const TaskProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    const contextValue = useMemo(() => {
-        return { state, dispatch };
-    }, [state, dispatch]);
+    useEffect(()=> {
+        const tasks = JSON.parse(localStorage.getItem("tasks"))
+        tasks && dispatch(setTask(tasks))
+    }, [])
+
     return (
-        <TaskContext.Provider value={contextValue}>
+        <TaskContext.Provider value={{ state, dispatch }}>
             {children}
         </TaskContext.Provider>
     );

@@ -1,10 +1,18 @@
+/* node modules */
 import React, {useContext} from "react";
 import styled from "styled-components";
+
+/* icons */
 import CancelIcon from "../assets/icons/CancelIcon";
 import CompleteIcon from "../assets/icons/CompleteIcon";
 import DeleteIcon from "../assets/icons/DeleteIcon";
+
+/* context */
 import {deleteTask, updateStatus, TaskContext} from "../contexts/taskContext";
+
+/* helpers */
 import {successMessage} from "../helpers/toastActions";
+
 
 const TaskContainer = styled.div`
   display: flex;
@@ -33,10 +41,10 @@ const TaskCheckbox = styled.div`
 
 
 const Task = (props) => {
-    const { dispatch } = useContext(TaskContext);
+    const { state, dispatch } = useContext(TaskContext);
     const {id, text, status} = props.task;
 
-    const ClickHandler = (status, id) => {
+    const clickHandler = (status, id) => {
         if (status === "cancel") {
             dispatch(updateStatus("", id));
         } else if (status === "complete") {
@@ -51,7 +59,7 @@ const Task = (props) => {
     }
 
         return (<TaskContainer>
-            <TaskCheckbox onClick={() => ClickHandler(status, id)}>
+            <TaskCheckbox onClick={() => clickHandler(status, id)}>
                 {
                     {
                         'cancel': <CancelIcon/>,
@@ -63,6 +71,7 @@ const Task = (props) => {
             <DeleteIcon
                  onClick={() => {
                      dispatch(deleteTask(id))
+                     localStorage.setItem("tasks", JSON.stringify(state.tasks))
                      successMessage("Завдання успішно видалено !")
                  }}
             />
